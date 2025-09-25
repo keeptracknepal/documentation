@@ -50,8 +50,8 @@ flowchart TD
     
     style A fill:#2196f3,color:#fff
     style BB fill:#4caf50,color:#fff
-    style V fill:#f44336,color:#fff
-    style Z fill:#f44336,color:#fff
+    style V fill:#e57373,color:#000
+    style Z fill:#e57373,color:#000
 ```
 
 ## Decision Points
@@ -91,10 +91,10 @@ flowchart LR
     B --> C[Department Manager]
     C --> D[Management Team]
     
-    style A fill:#e3f2fd
-    style B fill:#bbdefb
-    style C fill:#90caf9
-    style D fill:#64b5f6
+    style A fill:#2196f3,color:#fff
+    style B fill:#1976d2,color:#fff
+    style C fill:#1565c0,color:#fff
+    style D fill:#0d47a1,color:#fff
 ```
 
 ## Integration Points
