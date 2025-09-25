@@ -29,29 +29,36 @@ flowchart TD
     Q --> P
     O --> P
     
-    P --> R{Approval Required}
-    R -->|Department Level| S{Department Decision}
-    R -->|Management Level| T{Management Decision}
+    P --> R[Maintenance Department Review]
+    R --> S{Within Department Range?}
     
-    S -->|Approve| U[Start Work]
-    S -->|Reject| V[Mark for Scrap]
-    T -->|Approve| U
-    T -->|Reject| V
+    S -->|Yes| T{Department Decision}
+    S -->|No| U[Contact Management]
     
-    U --> W[Complete Work]
-    W --> X[Update Asset Status]
-    X --> Y[Process Billing]
+    T -->|Approve| V[Start Work]
+    T -->|Reject| W[Mark for Scrap]
     
-    V --> Z[Scrap Asset]
-    Z --> AA[Record Salvage Value]
+    U --> X[Management Decision]
+    X -->|Approve| Y[Approval to Maintenance]
+    X -->|Reject| Z[Rejection to Maintenance]
     
-    Y --> BB[Close Issue]
-    AA --> BB
+    Y --> V
+    Z --> W
+    
+    V --> CC[Complete Work]
+    CC --> DD[Update Asset Status]
+    DD --> EE[Process Billing]
+    
+    W --> FF[Scrap Asset]
+    FF --> GG[Record Salvage Value]
+    
+    EE --> BB[Close Issue]
+    GG --> BB
     
     style A fill:#2196f3,color:#fff
     style BB fill:#4caf50,color:#fff
-    style V fill:#e57373,color:#000
-    style Z fill:#e57373,color:#000
+    style W fill:#e57373,color:#000
+    style FF fill:#e57373,color:#000
 ```
 
 ## Decision Points

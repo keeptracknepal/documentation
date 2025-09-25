@@ -9,6 +9,7 @@ The Maintenance Department is responsible for managing all asset maintenance, re
 ### Core Documents
 
 - **[Working Mechanism](./working-mechanism.md)** - Detailed step-by-step process for handling maintenance requests
+- **[Workflow Diagram](./workflow-diagram.md)** - Visual representation of the maintenance process flow
 - **[Raw Documentation](./raw/)** - Source materials and initial documentation
 
 ### Key Processes
@@ -60,6 +61,10 @@ The Maintenance Department is responsible for managing all asset maintenance, re
 ```
 Issue Raised → Assignment → Examination → Approval → Resolution → Billing
 ```
+
+### Visual Workflow
+
+For a detailed visual representation of the maintenance workflow, including decision points, approval processes, and escalation paths, see the [Workflow Diagram](./workflow-diagram.md).
 
 ## Related Documentation
 
