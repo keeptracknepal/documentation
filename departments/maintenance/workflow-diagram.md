@@ -48,10 +48,10 @@ flowchart TD
     Y --> BB[Close Issue]
     AA --> BB
     
-    style A fill:#e1f5fe
-    style BB fill:#c8e6c9
-    style V fill:#ffcdd2
-    style Z fill:#ffcdd2
+    style A fill:#2196f3,color:#fff
+    style BB fill:#4caf50,color:#fff
+    style V fill:#f44336,color:#fff
+    style Z fill:#f44336,color:#fff
 ```
 
 ## Decision Points
