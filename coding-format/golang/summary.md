@@ -201,6 +201,39 @@ project/
 - Relationship definitions
 - Immutable where appropriate
 
+**Database Schema Mapping Standards**:
+- Use complete schema.table.column names in db tags
+- Include proper data types and constraints
+- Document foreign key relationships
+- Specify nullable fields with pointers
+- Include audit fields (created_at, updated_at, created_by, updated_by)
+
+**Example Model Structure**:
+```go
+// User represents the user data model
+type User struct {
+    ID            string    `json:"id" db:"core.users.id"`
+    OrganizationID string   `json:"organization_id" db:"core.users.organization_id"`
+    BranchID      *string   `json:"branch_id,omitempty" db:"core.users.branch_id"`
+    Name          string    `json:"name" db:"core.users.name"`
+    Email         string    `json:"email" db:"core.users.email"`
+    Password      string    `json:"-" db:"core.users.password"`
+    IsActive      bool      `json:"is_active" db:"core.users.is_active"`
+    CreatedBy     *string   `json:"created_by,omitempty" db:"core.users.created_by"`
+    CreatedAt     time.Time `json:"created_at" db:"core.users.created_at"`
+    UpdatedBy     *string   `json:"updated_by,omitempty" db:"core.users.updated_by"`
+    UpdatedAt     time.Time `json:"updated_at" db:"core.users.updated_at"`
+}
+```
+
+**Database Schema Documentation Requirements**:
+- Document all table relationships
+- Include constraint information
+- Specify data types and lengths
+- Document foreign key references
+- Include index information
+- Document audit trail fields
+
 ### 6. Module Configuration
 **Location**: `{module}/`
 **File Naming**: `{module}.module.go`
@@ -332,6 +365,120 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 - Use context for cancellation
 - Handle connection failures gracefully
 - Use transactions for multi-step operations
+
+### Database Schema Standards
+
+#### Complete Schema Mapping
+All database field mappings must use complete schema.table.column names:
+
+```go
+// ✅ Correct - Complete schema.table.column mapping
+type User struct {
+    ID            string    `json:"id" db:"core.users.id"`
+    OrganizationID string   `json:"organization_id" db:"core.users.organization_id"`
+    BranchID      *string   `json:"branch_id,omitempty" db:"core.users.branch_id"`
+    Name          string    `json:"name" db:"core.users.name"`
+    Email         string    `json:"email" db:"core.users.email"`
+    Password      string    `json:"-" db:"core.users.password"`
+    IsActive      bool      `json:"is_active" db:"core.users.is_active"`
+    CreatedBy     *string   `json:"created_by,omitempty" db:"core.users.created_by"`
+    CreatedAt     time.Time `json:"created_at" db:"core.users.created_at"`
+    UpdatedBy     *string   `json:"updated_by,omitempty" db:"core.users.updated_by"`
+    UpdatedAt     time.Time `json:"updated_at" db:"core.users.updated_at"`
+}
+
+// ❌ Incorrect - Incomplete column mapping
+type User struct {
+    ID   string `json:"id" db:"id"`
+    Name string `json:"name" db:"name"`
+}
+```
+
+#### Schema Documentation Requirements
+Each model must include comprehensive schema documentation:
+
+```go
+// User represents the user data model
+// Schema: core.users
+// Primary Key: core.users.id
+// Foreign Keys: 
+//   - core.users.organization_id -> core.organizations.id
+//   - core.users.branch_id -> core.branches.id (nullable)
+//   - core.users.created_by -> core.users.id (nullable)
+//   - core.users.updated_by -> core.users.id (nullable)
+// Indexes:
+//   - core.users.email (unique)
+//   - core.users.organization_id
+//   - core.users.is_active
+// Constraints:
+//   - core.users.email NOT NULL UNIQUE
+//   - core.users.organization_id NOT NULL
+//   - core.users.name NOT NULL
+type User struct {
+    ID            string    `json:"id" db:"core.users.id"`                    // UUID, Primary Key
+    OrganizationID string   `json:"organization_id" db:"core.users.organization_id"` // UUID, Foreign Key -> core.organizations.id
+    BranchID      *string   `json:"branch_id,omitempty" db:"core.users.branch_id"`   // UUID, Foreign Key -> core.branches.id (nullable)
+    Name          string    `json:"name" db:"core.users.name"`                // VARCHAR(255), NOT NULL
+    Email         string    `json:"email" db:"core.users.email"`              // VARCHAR(255), NOT NULL UNIQUE
+    Password      string    `json:"-" db:"core.users.password"`               // VARCHAR(255), NOT NULL (hidden from JSON)
+    IsActive      bool      `json:"is_active" db:"core.users.is_active"`       // BOOLEAN, DEFAULT true
+    CreatedBy     *string   `json:"created_by,omitempty" db:"core.users.created_by"` // UUID, Foreign Key -> core.users.id (nullable)
+    CreatedAt     time.Time `json:"created_at" db:"core.users.created_at"`     // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+    UpdatedBy     *string   `json:"updated_by,omitempty" db:"core.users.updated_by"` // UUID, Foreign Key -> core.users.id (nullable)
+    UpdatedAt     time.Time `json:"updated_at" db:"core.users.updated_at"`     // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+}
+```
+
+#### Common Schema Patterns
+
+**Core Schema Tables**:
+- `core.organizations` - Organization management
+- `core.branches` - Branch management  
+- `core.users` - User management
+- `core.positions` - Position management
+- `core.access` - Access control
+
+**Assets Schema Tables**:
+- `assets.items` - Asset items
+- `assets.categories` - Asset categories
+- `assets.manufacturer` - Manufacturers
+- `assets.model_number` - Model numbers
+- `assets.tags` - Asset tags
+- `assets.service_providers` - Service providers
+
+**Vehicles Schema Tables**:
+- `vehicles.bluebook` - Vehicle bluebook
+- `vehicles.insurance` - Vehicle insurance
+- `vehicles.pollution_sticker` - Pollution stickers
+
+#### Audit Trail Standards
+All tables must include audit trail fields:
+
+```go
+// Standard audit fields for all tables
+type AuditFields struct {
+    CreatedBy *string   `json:"created_by,omitempty" db:"{schema}.{table}.created_by"` // UUID, Foreign Key -> core.users.id
+    CreatedAt time.Time `json:"created_at" db:"{schema}.{table}.created_at"`           // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+    UpdatedBy *string   `json:"updated_by,omitempty" db:"{schema}.{table}.updated_by"` // UUID, Foreign Key -> core.users.id
+    UpdatedAt time.Time `json:"updated_at" db:"{schema}.{table}.updated_at"`           // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+}
+```
+
+#### Foreign Key Documentation
+All foreign key relationships must be documented:
+
+```go
+// Example with foreign key documentation
+type Asset struct {
+    ID             string    `json:"id" db:"assets.items.id"`                    // UUID, Primary Key
+    OrganizationID string    `json:"organization_id" db:"assets.items.organization_id"` // UUID, Foreign Key -> core.organizations.id
+    BranchID       string    `json:"branch_id" db:"assets.items.branch_id"`            // UUID, Foreign Key -> core.branches.id
+    CategoryID     *string   `json:"category_id,omitempty" db:"assets.items.category_id"` // UUID, Foreign Key -> assets.categories.id (nullable)
+    ManufacturerID *string   `json:"manufacturer_id,omitempty" db:"assets.items.manufacturer_id"` // UUID, Foreign Key -> assets.manufacturer.id (nullable)
+    ModelNumberID  *string   `json:"model_number_id,omitempty" db:"assets.items.model_number_id"` // UUID, Foreign Key -> assets.model_number.id (nullable)
+    // ... other fields
+}
+```
 
 ### Repository Pattern Example
 ```go
@@ -592,13 +739,39 @@ func (r *userRepository) CreateUser(user *models.User) error {
 ```go
 package models
 
+import (
+    "errors"
+    "time"
+)
+
+// User represents the user data model
+// Schema: core.users
+// Primary Key: core.users.id
+// Foreign Keys: 
+//   - core.users.organization_id -> core.organizations.id
+//   - core.users.branch_id -> core.branches.id (nullable)
+//   - core.users.created_by -> core.users.id (nullable)
+//   - core.users.updated_by -> core.users.id (nullable)
+// Indexes:
+//   - core.users.email (unique)
+//   - core.users.organization_id
+//   - core.users.is_active
+// Constraints:
+//   - core.users.email NOT NULL UNIQUE
+//   - core.users.organization_id NOT NULL
+//   - core.users.name NOT NULL
 type User struct {
-    ID        string    `json:"id" db:"id"`
-    Name      string    `json:"name" db:"name"`
-    Email     string    `json:"email" db:"email"`
-    Password  string    `json:"-" db:"password"`
-    CreatedAt time.Time `json:"created_at" db:"created_at"`
-    UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+    ID            string    `json:"id" db:"core.users.id"`                    // UUID, Primary Key
+    OrganizationID string   `json:"organization_id" db:"core.users.organization_id"` // UUID, Foreign Key -> core.organizations.id
+    BranchID      *string   `json:"branch_id,omitempty" db:"core.users.branch_id"`   // UUID, Foreign Key -> core.branches.id (nullable)
+    Name          string    `json:"name" db:"core.users.name"`                // VARCHAR(255), NOT NULL
+    Email         string    `json:"email" db:"core.users.email"`              // VARCHAR(255), NOT NULL UNIQUE
+    Password      string    `json:"-" db:"core.users.password"`               // VARCHAR(255), NOT NULL (hidden from JSON)
+    IsActive      bool      `json:"is_active" db:"core.users.is_active"`       // BOOLEAN, DEFAULT true
+    CreatedBy     *string   `json:"created_by,omitempty" db:"core.users.created_by"` // UUID, Foreign Key -> core.users.id (nullable)
+    CreatedAt     time.Time `json:"created_at" db:"core.users.created_at"`     // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+    UpdatedBy     *string   `json:"updated_by,omitempty" db:"core.users.updated_by"` // UUID, Foreign Key -> core.users.id (nullable)
+    UpdatedAt     time.Time `json:"updated_at" db:"core.users.updated_at"`     // TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
 }
 
 func (u *User) Validate() error {
@@ -607,6 +780,9 @@ func (u *User) Validate() error {
     }
     if u.Email == "" {
         return errors.New("email is required")
+    }
+    if u.OrganizationID == "" {
+        return errors.New("organization_id is required")
     }
     return nil
 }
