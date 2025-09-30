@@ -31,14 +31,14 @@ This document defines the standards for mapping database schemas to Go structs, 
 ```go
 // ✅ Correct: Complete schema mapping with proper types
 type User struct {
-    ID          string     `db:"public.users.id"            json:"id"`
-    Username    string     `db:"public.users.username"      json:"username"`
-    Email       string     `db:"public.users.email"         json:"email"`
-    Status      string     `db:"public.users.status"        json:"status"`
-    CreatedAt   time.Time  `db:"public.users.created_at"    json:"created_at"`
-    UpdatedAt   *time.Time `db:"public.users.updated_at"    json:"updated_at"`
-    CreatedBy   string     `db:"public.users.created_by"    json:"created_by"`
-    UpdatedBy   *string    `db:"public.users.updated_by"    json:"updated_by"`
+    ID          string     `db:"core.users.id"            json:"core.users.id"`
+    Username    string     `db:"core.users.username"      json:"core.users.username"`
+    Email       string     `db:"core.users.email"         json:"core.users.email"`
+    Status      string     `db:"core.users.status"        json:"core.users.status"`
+    CreatedAt   time.Time  `db:"core.users.created_at"    json:"core.users.created_at"`
+    UpdatedAt   *time.Time `db:"core.users.updated_at"    json:"core.users.updated_at"`
+    CreatedBy   string     `db:"core.users.created_by"    json:"core.users.created_by"`
+    UpdatedBy   *string    `db:"core.users.updated_by"    json:"core.users.updated_by"`
 }
 
 // ❌ Incorrect: Missing schema, incomplete mapping
@@ -53,15 +53,15 @@ type User struct {
 ```go
 // ✅ Correct: Use pointers for nullable fields
 type Asset struct {
-    ID              string     `db:"public.assets.id"               json:"id"`
-    Name            string     `db:"public.assets.name"             json:"name"`
-    ModelNumber     *string    `db:"public.assets.model_number"     json:"model_number"`
-    Manufacturer    *string    `db:"public.assets.manufacturer"     json:"manufacturer"`
-    Barcode         *string    `db:"public.assets.barcode"          json:"barcode"`
-    PurchaseAmount  *float64   `db:"public.assets.purchase_amount"  json:"purchase_amount"`
-    PurchaseDate    *time.Time `db:"public.assets.purchase_date"    json:"purchase_date"`
-    CreatedAt       time.Time  `db:"public.assets.created_at"       json:"created_at"`
-    UpdatedAt       *time.Time `db:"public.assets.updated_at"       json:"updated_at"`
+    ID              string     `db:"core.assets.id"               json:"core.assets.id"`
+    Name            string     `db:"core.assets.name"             json:"core.assets.name"`
+    ModelNumber     *string    `db:"core.assets.model_number"     json:"core.assets.model_number"`
+    Manufacturer    *string    `db:"core.assets.manufacturer"     json:"core.assets.manufacturer"`
+    Barcode         *string    `db:"core.assets.barcode"          json:"core.assets.barcode"`
+    PurchaseAmount  *float64   `db:"core.assets.purchase_amount"  json:"core.assets.purchase_amount"`
+    PurchaseDate    *time.Time `db:"core.assets.purchase_date"    json:"core.assets.purchase_date"`
+    CreatedAt       time.Time  `db:"core.assets.created_at"       json:"core.assets.created_at"`
+    UpdatedAt       *time.Time `db:"core.assets.updated_at"       json:"core.assets.updated_at"`
 }
 
 // ❌ Incorrect: Not handling nullable fields properly
@@ -244,17 +244,102 @@ type User struct {
 ```
 
 ### 2. JSON Tag Standards
+
+#### 2.1 Schema-Based JSON Naming (Recommended)
 ```go
-// ✅ Correct: Consistent JSON naming
-`json:"id"`
-`json:"user_name"`
-`json:"created_at"`
-`json:"updated_at"`
+// ✅ Correct: JSON tags follow schema.table.column pattern
+type User struct {
+    ID          string     `db:"core.users.id"            json:"core.users.id"`
+    Username    string     `db:"core.users.username"      json:"core.users.username"`
+    Email       string     `db:"core.users.email"         json:"core.users.email"`
+    Status      string     `db:"core.users.status"        json:"core.users.status"`
+    CreatedAt   time.Time  `db:"core.users.created_at"    json:"core.users.created_at"`
+    UpdatedAt   *time.Time `db:"core.users.updated_at"    json:"core.users.updated_at"`
+}
+
+type Profile struct {
+    ID        string  `db:"core.profile.id"         json:"core.profile.id"`
+    UserID    string  `db:"core.profile.user_id"    json:"core.profile.user_id"`
+    ImageURL  *string `db:"core.profile.image_url"  json:"core.profile.image_url"`
+    Bio       *string `db:"core.profile.bio"        json:"core.profile.bio"`
+    Skills    *string `db:"core.profile.skills"     json:"core.profile.skills"`
+    CreatedAt time.Time `db:"core.profile.created_at" json:"core.profile.created_at"`
+}
+```
+
+#### 2.2 Alternative: Simplified JSON Naming (When Schema Context is Clear)
+```go
+// ✅ Acceptable: Simplified naming when context is clear from API structure
+type User struct {
+    ID          string     `db:"core.users.id"            json:"id"`
+    Username    string     `db:"core.users.username"      json:"username"`
+    Email       string     `db:"core.users.email"         json:"email"`
+    Status      string     `db:"core.users.status"        json:"status"`
+    CreatedAt   time.Time  `db:"core.users.created_at"    json:"created_at"`
+    UpdatedAt   *time.Time `db:"core.users.updated_at"    json:"updated_at"`
+}
+
+type Profile struct {
+    ID        string  `db:"core.profile.id"         json:"id"`
+    UserID    string  `db:"core.profile.user_id"    json:"user_id"`
+    ImageURL  *string `db:"core.profile.image_url"  json:"image_url"`
+    Bio       *string `db:"core.profile.bio"        json:"bio"`
+    Skills    *string `db:"core.profile.skills"     json:"skills"`
+    CreatedAt time.Time `db:"core.profile.created_at" json:"created_at"`
+}
+```
+
+#### 2.3 JSON Naming Rules
+```go
+// ✅ Correct: Consistent JSON naming conventions
+`json:"id"`                    // Simple field names
+`json:"user_name"`             // Snake case for multi-word fields
+`json:"created_at"`            // Timestamp fields
+`json:"updated_at"`            // Timestamp fields
+`json:"core.users.id"`         // Schema-based naming (preferred)
+`json:"core.profile.image_url"` // Schema-based naming (preferred)
 
 // ❌ Incorrect: Inconsistent naming
-`json:"ID"`
-`json:"userName"`
-`json:"createdAt"`
+`json:"ID"`                    // Capital letters
+`json:"userName"`              // Camel case
+`json:"createdAt"`             // Camel case
+`json:"profile_image_url"`     // Mixed naming (should be image_url or core.profile.image_url)
+```
+
+#### 2.4 When to Use Schema-Based vs Simplified JSON Naming
+
+**Use Schema-Based JSON Naming (`json:"core.table.column"`) when:**
+- Building APIs that serve multiple schemas
+- Need to avoid field name conflicts across different tables
+- Working with complex data structures that combine multiple tables
+- Building generic or reusable API endpoints
+- Need clear field origin for debugging and maintenance
+
+**Use Simplified JSON Naming (`json:"column"`) when:**
+- API context makes the table/schema clear
+- Working with single-table focused endpoints
+- Building simple CRUD operations
+- Performance is critical (slightly smaller JSON payloads)
+- Frontend expects simplified field names
+
+**Example: Mixed Approach**
+```go
+// For user profile API - simplified naming (context is clear)
+type UserProfileResponse struct {
+    ID        string  `db:"core.users.id"         json:"id"`
+    Username  string  `db:"core.users.username"   json:"username"`
+    Email     string  `db:"core.users.email"      json:"email"`
+    ImageURL  *string `db:"core.profile.image_url" json:"image_url"`
+    Bio       *string `db:"core.profile.bio"      json:"bio"`
+}
+
+// For generic data export API - schema-based naming (avoid conflicts)
+type DataExportResponse struct {
+    UserID    string  `db:"core.users.id"         json:"core.users.id"`
+    Username  string  `db:"core.users.username"   json:"core.users.username"`
+    ProfileID string  `db:"core.profile.id"       json:"core.profile.id"`
+    ImageURL  *string `db:"core.profile.image_url" json:"core.profile.image_url"`
+}
 ```
 
 ### 3. Validation Tags

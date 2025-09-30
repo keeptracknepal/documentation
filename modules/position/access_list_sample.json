@@ -1,0 +1,91 @@
+{
+    "modules": {
+      "assets": {
+        "scope": "organization",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "policy": {
+        "scope": "organization",
+        "permissions": {
+          "view": false,
+          "create": false,
+          "delete": false,
+          "update": false
+        }
+      },
+      "branches": {
+        "scope": "organization",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "employee": {
+        "scope": "organization",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "dashboard": {
+        "scope": "organization",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "documents": {
+        "scope": "organization",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "positions": {
+        "scope": "branches",
+        "permissions": {
+          "view": true,
+          "create": true,
+          "delete": true,
+          "update": true
+        }
+      },
+      "service_provider": {
+        "scope": "organization",
+        "permissions": {
+          "view": false,
+          "create": false,
+          "delete": false,
+          "update": false
+        }
+      }
+    },
+    "departments": {
+      "maintenance_department": {
+        "scope": "organization",
+        "positions": {
+          "department_lead": true,
+          "department_technician": false
+        }
+      },
+      "management_department": {
+        "scope": "organization",
+        "positions": {
+          "department_lead": true
+        }
+      }
+    }
+  }

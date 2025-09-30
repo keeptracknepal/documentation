@@ -39,15 +39,31 @@ interface ModuleAccess {
     permissions: AccessPermission;       // Specific permissions
 }
 
+interface DepartmentPositions {
+    department_lead: boolean;           // Department leadership position
+    department_technician?: boolean;    // Department technician position (optional)
+}
+
+interface DepartmentAccess {
+    scope: 'organization' | 'branches';  // Department scope level
+    positions: DepartmentPositions;      // Department-specific positions
+}
+
 interface AccessList {
-    employee: ModuleAccess;
-    positions: ModuleAccess;
-    branches: ModuleAccess;
-    dashboard: ModuleAccess;
-    assets: ModuleAccess;
-    service_provider: ModuleAccess;
-    policy: ModuleAccess;
-    budget: ModuleAccess;
+    modules: {
+        employee: ModuleAccess;
+        positions: ModuleAccess;
+        branches: ModuleAccess;
+        dashboard: ModuleAccess;
+        assets: ModuleAccess;
+        service_provider: ModuleAccess;
+        policy: ModuleAccess;
+        documents: ModuleAccess;
+    };
+    departments: {
+        maintenance_department: DepartmentAccess;
+        management_department: DepartmentAccess;
+    };
 }
 ```
 
@@ -57,12 +73,12 @@ The system supports the following modules:
 
 1. **Assets** - Asset management and tracking
 2. **Branches** - Branch/office management
-3. **Budget** - Budget planning and management
-4. **Dashboard** - Main dashboard access
-5. **Employee** - Employee management
-6. **Positions** - Position/role management
-7. **Service Provider** - External service provider management
-8. **Policy** - Policy and compliance management
+3. **Dashboard** - Main dashboard access
+4. **Employee** - Employee management
+5. **Positions** - Position/role management
+6. **Service Provider** - External service provider management
+7. **Policy** - Policy and compliance management
+8. **Documents** - Document management and file operations
 
 ## Department-Based Access Control
 
@@ -73,45 +89,111 @@ In addition to module-based permissions, the system supports department-based ac
 The system supports the following departments:
 
 1. **Maintenance Department** - Handles asset maintenance and technical operations
-   - **Maintenance Technician** - Technical staff responsible for maintenance tasks
+   - **Department Lead** - Leadership position within maintenance department
+   - **Department Technician** - Technical staff responsible for maintenance tasks
 2. **Management Department** - Handles administrative and managerial functions
+   - **Department Lead** - Leadership position within management department
 
 ### Department Access Configuration
 
 ```typescript
+interface DepartmentPositions {
+    department_lead: boolean;           // Department leadership position
+    department_technician?: boolean;    // Department technician position (optional)
+}
+
 interface DepartmentAccess {
-    maintenance_department: boolean;     // Access to maintenance department
-    maintenance_technician: boolean;     // Access to maintenance technician role
-    management_department: boolean;      // Access to management department
+    scope: 'organization' | 'branches';  // Department scope level
+    positions: DepartmentPositions;      // Department-specific positions
 }
 
 interface PositionAccess {
-    modules: AccessList;                 // Module-based permissions
-    departments: DepartmentAccess;       // Department-based permissions
+    modules: {
+        // Module-based permissions
+        assets: ModuleAccess;
+        branches: ModuleAccess;
+        dashboard: ModuleAccess;
+        employee: ModuleAccess;
+        positions: ModuleAccess;
+        service_provider: ModuleAccess;
+        policy: ModuleAccess;
+        documents: ModuleAccess;
+    };
+    departments: {
+        maintenance_department: DepartmentAccess;
+        management_department: DepartmentAccess;
+    };
 }
 ```
 
 ### Department Access Examples
 
 ```typescript
-const departmentAccessConfig: DepartmentAccess = {
-    maintenance_department: true,        // User has access to maintenance department
-    maintenance_technician: false,       // User is not a maintenance technician
-    management_department: true         // User has access to management department
+const departmentAccessConfig = {
+    maintenance_department: {
+        scope: 'organization',
+        positions: {
+            department_lead: true,        // User is a maintenance department lead
+            department_technician: false  // User is not a maintenance technician
+        }
+    },
+    management_department: {
+        scope: 'organization',
+        positions: {
+            department_lead: true         // User is a management department lead
+        }
+    }
 };
 
 const fullPositionConfig: PositionAccess = {
     modules: {
         assets: {
-            scope: 'branches',
-            permissions: { view: true, create: true, update: true, delete: false }
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
         },
-        // ... other modules
+        branches: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        dashboard: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        employee: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        positions: {
+            scope: 'branches',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        documents: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        policy: {
+            scope: 'organization',
+            permissions: { view: false, create: false, update: false, delete: false }
+        },
+        service_provider: {
+            scope: 'organization',
+            permissions: { view: false, create: false, update: false, delete: false }
+        }
     },
     departments: {
-        maintenance_department: true,
-        maintenance_technician: true,
-        management_department: false
+        maintenance_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true,
+                department_technician: false
+            }
+        },
+        management_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true
+            }
+        }
     }
 };
 ```
@@ -131,37 +213,70 @@ The dual permission system provides comprehensive access control by combining:
 // Example 1: Maintenance Technician
 const maintenanceTechnician = {
     modules: {
-        assets: { scope: 'branches', permissions: { view: true, create: true, update: true, delete: false } }
+        assets: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        branches: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        dashboard: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        employee: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        positions: { scope: 'branches', permissions: { view: true, create: true, update: true, delete: true } },
+        documents: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        policy: { scope: 'organization', permissions: { view: false, create: false, update: false, delete: false } },
+        service_provider: { scope: 'organization', permissions: { view: false, create: false, update: false, delete: false } }
     },
     departments: {
-        maintenance_department: true,
-        maintenance_technician: true,
-        management_department: false
+        maintenance_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true,
+                department_technician: false
+            }
+        },
+        management_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true
+            }
+        }
     }
 };
 
-// Example 2: Branch Manager
-const branchManager = {
+// Example 2: Management Director
+const managementDirector = {
     modules: {
-        assets: { scope: 'branches', permissions: { view: true, create: true, update: true, delete: true } },
-        budget: { scope: 'branches', permissions: { view: true, create: true, update: true, delete: false } }
+        assets: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        branches: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        dashboard: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        employee: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        positions: { scope: 'branches', permissions: { view: true, create: true, update: true, delete: true } },
+        documents: { scope: 'organization', permissions: { view: true, create: true, update: true, delete: true } },
+        policy: { scope: 'organization', permissions: { view: false, create: false, update: false, delete: false } },
+        service_provider: { scope: 'organization', permissions: { view: false, create: false, update: false, delete: false } }
     },
     departments: {
-        maintenance_department: false,
-        maintenance_technician: false,
-        management_department: true
+        maintenance_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true,
+                department_technician: false
+            }
+        },
+        management_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true
+            }
+        }
     }
 };
 
 // Combined permission checks
 const canPerformMaintenance = (user) => {
-    return user.departments.maintenance_department && 
+    return user.departments.maintenance_department.positions.department_lead && 
            user.modules.assets.permissions.update;
 };
 
-const canApproveBudgets = (user) => {
-    return user.departments.management_department && 
-           user.modules.budget.permissions.update;
+const canManagePositions = (user) => {
+    return user.departments.management_department.positions.department_lead && 
+           user.modules.positions.permissions.update;
 };
 ```
 
@@ -191,38 +306,55 @@ Each module supports four permission types:
 The system includes a default permission configuration that serves as a template for new positions:
 
 ```typescript
-const defaultPositionAccessConfig: AccessList = {
-    assets: {
-        scope: 'branches',
-        permissions: { view: true, create: true, update: true, delete: true }
+const defaultPositionAccessConfig = {
+    modules: {
+        assets: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        branches: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        dashboard: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        employee: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        positions: {
+            scope: 'branches',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        documents: {
+            scope: 'organization',
+            permissions: { view: true, create: true, update: true, delete: true }
+        },
+        policy: {
+            scope: 'organization',
+            permissions: { view: false, create: false, update: false, delete: false }
+        },
+        service_provider: {
+            scope: 'organization',
+            permissions: { view: false, create: false, update: false, delete: false }
+        }
     },
-    branches: {
-        scope: 'organization',
-        permissions: { view: false, create: false, update: false, delete: false }
-    },
-    budget: {
-        scope: 'organization',
-        permissions: { view: false, create: false, update: false, delete: false }
-    },
-    dashboard: {
-        scope: 'branches',
-        permissions: { view: true, create: false, update: false, delete: false }
-    },
-    employee: {
-        scope: 'organization',
-        permissions: { view: false, create: false, update: false, delete: false }
-    },
-    positions: {
-        scope: 'organization',
-        permissions: { view: false, create: false, update: false, delete: false }
-    },
-    service_provider: {
-        scope: 'branches',
-        permissions: { view: true, create: true, update: false, delete: false }
-    },
-    policy: {
-        scope: 'organization',
-        permissions: { view: false, create: false, update: false, delete: false }
+    departments: {
+        maintenance_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true,
+                department_technician: false
+            }
+        },
+        management_department: {
+            scope: 'organization',
+            positions: {
+                department_lead: true
+            }
+        }
     }
 };
 ```
@@ -276,23 +408,52 @@ const positionData = {
     access_list: {
         modules: {
             assets: {
-                scope: 'branches',
-                permissions: { view: true, create: true, update: true, delete: false }
+                scope: 'organization',
+                permissions: { view: true, create: true, update: true, delete: true }
             },
-            budget: {
-                scope: 'branches',
-                permissions: { view: true, create: true, update: true, delete: false }
+            branches: {
+                scope: 'organization',
+                permissions: { view: true, create: true, update: true, delete: true }
             },
             dashboard: {
+                scope: 'organization',
+                permissions: { view: true, create: true, update: true, delete: true }
+            },
+            employee: {
+                scope: 'organization',
+                permissions: { view: true, create: true, update: true, delete: true }
+            },
+            positions: {
                 scope: 'branches',
-                permissions: { view: true, create: false, update: false, delete: false }
+                permissions: { view: true, create: true, update: true, delete: true }
+            },
+            documents: {
+                scope: 'organization',
+                permissions: { view: true, create: true, update: true, delete: true }
+            },
+            policy: {
+                scope: 'organization',
+                permissions: { view: false, create: false, update: false, delete: false }
+            },
+            service_provider: {
+                scope: 'organization',
+                permissions: { view: false, create: false, update: false, delete: false }
             }
-            // ... other modules
         },
         departments: {
-            maintenance_department: false,
-            maintenance_technician: false,
-            management_department: true
+            maintenance_department: {
+                scope: 'organization',
+                positions: {
+                    department_lead: true,
+                    department_technician: false
+                }
+            },
+            management_department: {
+                scope: 'organization',
+                positions: {
+                    department_lead: true
+                }
+            }
         }
     }
 };
@@ -306,13 +467,13 @@ const canViewAssets = userPosition.access_list.modules.assets.permissions.view;
 const hasOrgAccess = userPosition.access_list.modules.branches.scope === 'organization';
 
 // Check department-based permissions
-const hasMaintenanceAccess = userPosition.access_list.departments.maintenance_department;
-const isMaintenanceTechnician = userPosition.access_list.departments.maintenance_technician;
-const hasManagementAccess = userPosition.access_list.departments.management_department;
+const hasMaintenanceAccess = userPosition.access_list.departments.maintenance_department.positions.department_lead;
+const isMaintenanceTechnician = userPosition.access_list.departments.maintenance_department.positions.department_technician;
+const hasManagementAccess = userPosition.access_list.departments.management_department.positions.department_lead;
 
 // Combined permission checks
 const canManageAssets = canViewAssets && hasMaintenanceAccess;
-const canApproveBudgets = userPosition.access_list.modules.budget.permissions.update && hasManagementAccess;
+const canManagePositions = userPosition.access_list.modules.positions.permissions.update && hasManagementAccess;
 ```
 
 ## Security Considerations
