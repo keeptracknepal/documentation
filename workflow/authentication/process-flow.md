@@ -104,42 +104,43 @@ sequenceDiagram
 ```mermaid
 graph TB
     subgraph "Frontend Layer"
-        WA[Web App]
-        MA[Mobile App]
-        AP[Admin Panel]
+        WA[Web Application<br/>React/Vue/Angular]
+        MA[Mobile Application<br/>React Native/Flutter]
+        AP[Admin Panel<br/>Management Interface]
     end
     
     subgraph "Authentication Layer"
-        AS[Authentication Service<br/>https://authentication.keeptrack.velonovo.com]
-        AS1[Login Module]
-        AS2[JWT Management]
-        AS3[User Management]
+        AS[Authentication Service<br/>https://authentication.keeptrack.velonovo.com<br/>Port: 8302]
+        AS1[Login Module<br/>User Authentication]
+        AS2[JWT Management<br/>Token Generation]
+        AS3[User Management<br/>Permissions & Roles]
     end
     
     subgraph "Business Logic Layer"
-        FS[Foundation Service<br/>https://foundation.keeptrack.velonovo.com]
-        FS1[JWT Middleware]
-        FS2[Dashboard Module]
-        FS3[Assets Module]
-        FS4[Settings Module]
+        FS[Foundation Service<br/>https://foundation.keeptrack.velonovo.com<br/>Port: 8300]
+        FS1[JWT Middleware<br/>Token Validation]
+        FS2[Dashboard Module<br/>Main Interface]
+        FS3[Assets Module<br/>File Management]
+        FS4[Settings Module<br/>Configuration]
     end
     
     subgraph "Data Layer"
-        DB[(Supabase Database)]
-        T1[Users Table]
-        T2[Permissions Table]
-        T3[Business Data]
+        DB[(Supabase Database<br/>PostgreSQL)]
+        T1[Users Table<br/>Authentication Data]
+        T2[Permissions Table<br/>Access Control]
+        T3[Business Data<br/>Application Data]
     end
     
-    %% Connections
-    WA --> AS
-    MA --> AS
-    AP --> AS
+    %% Frontend to Services
+    WA -->|Login/Logout| AS
+    MA -->|Login/Logout| AS
+    AP -->|Login/Logout| AS
     
-    WA --> FS
-    MA --> FS
-    AP --> FS
+    WA -->|API Requests| FS
+    MA -->|API Requests| FS
+    AP -->|API Requests| FS
     
+    %% Service Internal Structure
     AS --> AS1
     AS --> AS2
     AS --> AS3
@@ -149,18 +150,20 @@ graph TB
     FS --> FS3
     FS --> FS4
     
-    AS --> DB
-    FS --> DB
+    %% Service to Database
+    AS -->|User Data| DB
+    FS -->|Business Data| DB
     
+    %% Database Structure
     DB --> T1
     DB --> T2
     DB --> T3
     
-    %% Styling
-    classDef frontend fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#ffffff
-    classDef auth fill:#1976d2,stroke:#01579b,stroke-width:2px,color:#ffffff
-    classDef foundation fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#ffffff
-    classDef database fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#ffffff
+    %% Styling with better contrast
+    classDef frontend fill:#2e7d32,stroke:#1b5e20,stroke-width:3px,color:#ffffff,font-size:14px
+    classDef auth fill:#1565c0,stroke:#0d47a1,stroke-width:3px,color:#ffffff,font-size:14px
+    classDef foundation fill:#6a1b9a,stroke:#4a148c,stroke-width:3px,color:#ffffff,font-size:14px
+    classDef database fill:#ef6c00,stroke:#e65100,stroke-width:3px,color:#ffffff,font-size:14px
     
     class WA,MA,AP frontend
     class AS,AS1,AS2,AS3 auth
@@ -258,3 +261,9 @@ mindmap
       Isolated Business Logic
       Easy Debugging
 ```
+
+%% Styling for Key Benefits
+classDef performance fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#ffffff
+classDef security fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#ffffff
+classDef scalability fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#ffffff
+classDef maintainability fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#ffffff
