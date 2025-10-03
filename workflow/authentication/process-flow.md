@@ -44,11 +44,11 @@ flowchart TD
     Y --> D
     
     %% Styling
-    classDef authService fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef foundationService fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef frontend fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
-    classDef error fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef authService fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#ffffff
+    classDef foundationService fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#ffffff
+    classDef frontend fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#ffffff
+    classDef database fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#ffffff
+    classDef error fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#ffffff
     
     class E,H,W authService
     class M,N,P,R foundationService
@@ -157,10 +157,10 @@ graph TB
     DB --> T3
     
     %% Styling
-    classDef frontend fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef auth fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef foundation fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef database fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef frontend fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#ffffff
+    classDef auth fill:#1976d2,stroke:#01579b,stroke-width:2px,color:#ffffff
+    classDef foundation fill:#7b1fa2,stroke:#4a148c,stroke-width:2px,color:#ffffff
+    classDef database fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#ffffff
     
     class WA,MA,AP frontend
     class AS,AS1,AS2,AS3 auth
@@ -229,8 +229,8 @@ graph LR
     F1 --> F3
     F1 --> F4
     
-    classDef env fill:#e3f2fd,stroke:#0277bd,stroke-width:2px
-    classDef secret fill:#f1f8e9,stroke:#33691e,stroke-width:2px
+    classDef env fill:#1976d2,stroke:#0277bd,stroke-width:2px,color:#ffffff
+    classDef secret fill:#388e3c,stroke:#33691e,stroke-width:2px,color:#ffffff
     
     class A1,F1 env
     class A2,F2 secret

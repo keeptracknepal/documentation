@@ -77,14 +77,12 @@
 
 #### API Endpoints
 ```
-Authentication Service (Port 8400) - LOGIN SERVICE ONLY
-├── /auth/login          - User authentication (returns JWT)
-├── /auth/logout         - User logout (invalidates JWT)
-├── /auth/me            - Current user info
-├── /auth/permissions   - User permissions
-├── /connection/test     - Database health check
-├── /connection/stats    - Connection statistics
-└── /connection/rpc      - Database function calls
+Authentication Service - LOGIN SERVICE ONLY
+├── /v1/login           - User authentication (returns JWT)
+├── /v1/logout          - User logout (invalidates JWT)
+├── /v1/me             - Current user info
+├── /v1/permissions    - User permissions
+└── /v1/guard/me       - Guard permissions
 ```
 
 ### 2. Foundation Service (Port 8300) - API & JWT VALIDATOR
