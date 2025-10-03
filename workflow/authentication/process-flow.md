@@ -102,59 +102,54 @@ sequenceDiagram
 ## System Architecture Overview
 
 ```mermaid
-graph TB
-    subgraph "Frontend Layer"
-        WA[Web Application<br/>React/Vue/Angular]
-        MA[Mobile Application<br/>React Native/Flutter]
-        AP[Admin Panel<br/>Management Interface]
-    end
+flowchart TD
+    %% Frontend Layer
+    WA[Web Application<br/>React/Vue/Angular]
+    MA[Mobile Application<br/>React Native/Flutter]
+    AP[Admin Panel<br/>Management Interface]
     
-    subgraph "Authentication Layer"
-        AS[Authentication Service<br/>https://authentication.keeptrack.velonovo.com<br/>Port: 8302]
-        AS1[Login Module<br/>User Authentication]
-        AS2[JWT Management<br/>Token Generation]
-        AS3[User Management<br/>Permissions & Roles]
-    end
+    %% Authentication Layer
+    AS[Authentication Service<br/>https://authentication.keeptrack.velonovo.com<br/>Port: 8302]
+    AS1[Login Module<br/>User Authentication]
+    AS2[JWT Management<br/>Token Generation]
+    AS3[User Management<br/>Permissions & Roles]
     
-    subgraph "Business Logic Layer"
-        FS[Foundation Service<br/>https://foundation.keeptrack.velonovo.com<br/>Port: 8300]
-        FS1[JWT Middleware<br/>Token Validation]
-        FS2[Dashboard Module<br/>Main Interface]
-        FS3[Assets Module<br/>File Management]
-        FS4[Settings Module<br/>Configuration]
-    end
+    %% Business Logic Layer
+    FS[Foundation Service<br/>https://foundation.keeptrack.velonovo.com<br/>Port: 8300]
+    FS1[JWT Middleware<br/>Token Validation]
+    FS2[Dashboard Module<br/>Main Interface]
+    FS3[Assets Module<br/>File Management]
+    FS4[Settings Module<br/>Configuration]
     
-    subgraph "Data Layer"
-        DB[(Supabase Database<br/>PostgreSQL)]
-        T1[Users Table<br/>Authentication Data]
-        T2[Permissions Table<br/>Access Control]
-        T3[Business Data<br/>Application Data]
-    end
+    %% Data Layer
+    DB[(Supabase Database<br/>PostgreSQL)]
+    T1[Users Table<br/>Authentication Data]
+    T2[Permissions Table<br/>Access Control]
+    T3[Business Data<br/>Application Data]
     
-    %% Frontend to Services
-    WA -->|Login/Logout| AS
-    MA -->|Login/Logout| AS
-    AP -->|Login/Logout| AS
+    %% Vertical Flow
+    WA --> AS
+    MA --> AS
+    AP --> AS
     
-    WA -->|API Requests| FS
-    MA -->|API Requests| FS
-    AP -->|API Requests| FS
-    
-    %% Service Internal Structure
     AS --> AS1
     AS --> AS2
     AS --> AS3
+    
+    AS1 --> FS
+    AS2 --> FS
+    AS3 --> FS
     
     FS --> FS1
     FS --> FS2
     FS --> FS3
     FS --> FS4
     
-    %% Service to Database
-    AS -->|User Data| DB
-    FS -->|Business Data| DB
+    FS1 --> DB
+    FS2 --> DB
+    FS3 --> DB
+    FS4 --> DB
     
-    %% Database Structure
     DB --> T1
     DB --> T2
     DB --> T3
@@ -262,8 +257,8 @@ mindmap
       Easy Debugging
 ```
 
-%% Styling for Key Benefits
-classDef performance fill:#1976d2,stroke:#0d47a1,stroke-width:2px,color:#ffffff
-classDef security fill:#d32f2f,stroke:#b71c1c,stroke-width:2px,color:#ffffff
-classDef scalability fill:#388e3c,stroke:#1b5e20,stroke-width:2px,color:#ffffff
-classDef maintainability fill:#f57c00,stroke:#e65100,stroke-width:2px,color:#ffffff
+%% Styling for Key Benefits - New Vibrant Colors
+classDef performance fill:#9c27b0,stroke:#6a1b9a,stroke-width:3px,color:#ffffff
+classDef security fill:#e91e63,stroke:#ad1457,stroke-width:3px,color:#ffffff
+classDef scalability fill:#00bcd4,stroke:#00838f,stroke-width:3px,color:#ffffff
+classDef maintainability fill:#ff9800,stroke:#ef6c00,stroke-width:3px,color:#ffffff
