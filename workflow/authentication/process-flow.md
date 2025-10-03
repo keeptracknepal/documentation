@@ -9,8 +9,8 @@ flowchart TD
     B --> C{Authentication Required?}
     
     %% Login Flow
-    C -->|Yes| D[POST /auth/login]
-    D --> E[Authentication Service<br/>Port 8302]
+    C -->|Yes| D[POST /v1/login]
+    D --> E[Authentication Service<br/>https://authentication.keeptrack.velonovo.com]
     E --> F[Validate Credentials]
     F --> G{Valid?}
     G -->|Yes| H[Generate JWT Token]
@@ -21,7 +21,7 @@ flowchart TD
     %% API Request Flow
     C -->|No| L[API Request with JWT]
     K --> L
-    L --> M[Foundation Service<br/>Port 8300]
+    L --> M[Foundation Service<br/>https://foundation.keeptrack.velonovo.com]
     M --> N[JWT Middleware]
     N --> O{Token Valid?}
     O -->|Yes| P[Process Business Logic]
@@ -32,7 +32,7 @@ flowchart TD
     
     %% Logout Flow
     T --> U{User Logout?}
-    U -->|Yes| V[POST /auth/logout]
+    U -->|Yes| V[POST /v1/logout]
     V --> E
     E --> W[Invalidate JWT Token]
     W --> X[Clear Token from Frontend]
@@ -63,13 +63,13 @@ flowchart TD
 sequenceDiagram
     participant U as User
     participant F as Frontend
-    participant A as Authentication Service (8302)
-    participant FO as Foundation Service (8300)
+    participant A as Authentication Service<br/>https://authentication.keeptrack.velonovo.com
+    participant FO as Foundation Service<br/>https://foundation.keeptrack.velonovo.com
     participant D as Database
     
     %% Login Sequence
     U->>F: Enter credentials
-    F->>A: POST /auth/login
+    F->>A: POST /v1/login
     A->>D: Validate user credentials
     D-->>A: User data
     A->>A: Generate JWT token
@@ -92,7 +92,7 @@ sequenceDiagram
     
     %% Logout Sequence
     U->>F: Logout
-    F->>A: POST /auth/logout
+    F->>A: POST /v1/logout
     A->>A: Invalidate JWT token
     A-->>F: Logout confirmation
     F->>F: Clear stored token
@@ -110,14 +110,14 @@ graph TB
     end
     
     subgraph "Authentication Layer"
-        AS[Authentication Service<br/>Port 8302]
+        AS[Authentication Service<br/>https://authentication.keeptrack.velonovo.com]
         AS1[Login Module]
         AS2[JWT Management]
         AS3[User Management]
     end
     
     subgraph "Business Logic Layer"
-        FS[Foundation Service<br/>Port 8300]
+        FS[Foundation Service<br/>https://foundation.keeptrack.velonovo.com]
         FS1[JWT Middleware]
         FS2[Dashboard Module]
         FS3[Assets Module]
@@ -174,7 +174,7 @@ graph TB
 stateDiagram-v2
     [*] --> LoginRequest : User submits credentials
     
-    LoginRequest --> ValidateCredentials : POST /auth/login
+    LoginRequest --> ValidateCredentials : POST /v1/login
     ValidateCredentials --> CredentialsValid : Database check
     ValidateCredentials --> CredentialsInvalid : Invalid credentials
     
@@ -195,7 +195,7 @@ stateDiagram-v2
     CredentialsInvalid --> LoginRequest : Show error message
     
     APIRequest --> LogoutRequest : User logs out
-    LogoutRequest --> InvalidateToken : POST /auth/logout
+    LogoutRequest --> InvalidateToken : POST /v1/logout
     InvalidateToken --> ClearToken : Remove from frontend
     ClearToken --> [*] : Return to login
 ```
