@@ -77,14 +77,14 @@
       "maintenance_department": {
         "scope": "organization",
         "positions": {
-          "department_lead": true,
-          "department_technician": false
+          "maintenance_department_lead": true,
+          "maintenance_department_technician": false
         }
       },
       "management_department": {
         "scope": "organization",
         "positions": {
-          "department_lead": true
+          "management_department_lead": true
         }
       }
     }
